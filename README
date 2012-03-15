@@ -1,0 +1,46 @@
+Suppose you have a MySQL database "test" with a table named "player":
+
+mysql> SELECT * FROM player;
++----+----------+-----+
+| id | name     | age |
++----+----------+-----+
+|  1 | Player 1 |  21 |
+|  2 | Player 2 |  25 |
++----+----------+-----+
+2 rows in set (0.00 sec)
+
+
+Then, your PHP code could look like this:
+
+<?php
+require('include/db_mysql.class.php');
+
+// connect to database "test" on localhost:
+$db = new db_mysql('test', 'db user', 'db pass');
+
+// get one field from a single record:
+$player1_name = $db->get_field('name', 'player', "id = '1'");
+print $player1_name; // output is "Player 1"
+
+// get multiple fields from a single record:
+$player2_info = $db->get_fields('*', 'player', "id = '2'");
+print $player2_info['name']; // output is "Player 2"
+
+// add new player:
+$hash = array('id' => 3, 'name' => 'Player 3', 'age' => 30);
+$db->add_record($hash, 'player');
+
+// update player 1:
+$hash = array('age' => 22);
+$db->update_record($hash, 'player', "id = '1'");
+
+// execute custom query:
+$q = $db->query("SELECT * FROM player WHERE age >= 25");
+print "Number of rows: " . $q->numrows() . "\n";
+while (is_array($row = $q->getrow())) {
+	print "$row[id]\t$row[name]\n";
+}
+
+?>
+
+Check source code for a complete list of methods and features.
